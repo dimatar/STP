@@ -7,11 +7,10 @@ pip install -r requirements.txt
 ```
 docker-compose up -d
 ```
-### create postgresql database
-- create database 'db'
-- create schema 'data'
-- create table 'temp_data' in schema 'data'
-- create columns 'id serial' and 'data text'
+### create topic in kafka
+```commandline
+sudo docker exec -it laba-kafka-1 kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic tasks
+```
 ### run flask app to generate data
 ```
 python app.py

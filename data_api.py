@@ -5,6 +5,7 @@ import json
 
 app = Flask(__name__)
 
+
 @app.route('/generate-stream')
 def generate_stream():
     def generate():
@@ -18,10 +19,11 @@ def generate_stream():
                 'event': random.choice(events),
                 'value': random.uniform(0, 100)
             }
-            yield f"data: {json.dumps(event_data)}\n\n"  # This structure is required for SSE
-            time.sleep(1)  # you can adjust the sleep time to regulate the streaming speed
+            yield f"{json.dumps(event_data)}\n\n"
+            time.sleep(1)
 
     return Response(stream_with_context(generate()), content_type='text/event-stream')
+
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

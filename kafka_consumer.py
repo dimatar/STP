@@ -1,36 +1,25 @@
-from confluent_kafka import Consumer, KafkaError
-from elasticsearch import Elasticsearch
+import time
+from json import loads
+from kafka import KafkaConsumer
 from loguru import logger
 
-from kafka import KafkaConsumer
-
+from proccesor import process
 
 logger.info("Kafka Consumer is starting")
 
-#
-# consumer = KafkaConsumer(
-#     'tasks',
-#      bootstrap_servers=['10.17.48.245:9092'],
-#      auto_offset_reset='latest',
-#      enable_auto_commit=True,
-#      group_id='test-consumer-group',
-#      value_deserializer=lambda x: loads(x.decode('ISO-8859-1')))
+# Create KafkaConsumer
+consumer = KafkaConsumer(
+    'tasks',
+    bootstrap_servers=['192.168.0.159:9094'],
+    auto_offset_reset='earliest',
+    enable_auto_commit=True,
+    group_id='processor',  # Specify your consumer group ID here
+    value_deserializer=lambda x: loads(x.decode('ISO-8859-1'))
+)
 
-
-# Налаштування Kafka Consumer
-conf = {
-    'bootstrap.servers': '0.0.0.0:9092',
-    'group.id': 'my-group',
-    'auto.offset.reset': 'latest'
-}
-consumer = Consumer(conf)
-
-
-# Підключення до Elasticsearch
-# es = Elasticsearch(['http://localhost:9200'])
 
 def process_data(data):
-    logger.info(f"Data received from Kafka, data: {data}")
+    process(data)
 
 
 def consume_loop(consumer, topics):
@@ -38,17 +27,14 @@ def consume_loop(consumer, topics):
     try:
         consumer.subscribe(topics)
 
-        while True:
-            msg = consumer.poll(timeout=1.0)
-            if msg is None: continue
+        for msg in consumer:
+            if msg is None:
+                continue
             logger.info(f"Message received from Kafka, message: {msg}")
-            if msg.error():
-                if msg.error().code() == KafkaError._PARTITION_EOF:
-                    continue
-                else:
-                    print(msg.error())
-                    break
-            process_data(msg.value().decode('utf-8'))
+            process_data(msg.value)
+
+            logger.info(f"Sleeping for 10 seconds")
+            time.sleep(10)
 
     finally:
         consumer.close()

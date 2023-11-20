@@ -20,7 +20,7 @@ def generate_stream():
                 'value': random.uniform(0, 100)
             }
             yield f"{json.dumps(event_data)}\n\n"
-            time.sleep(1)
+            time.sleep(10)
 
     return Response(stream_with_context(generate()), content_type='text/event-stream')
 

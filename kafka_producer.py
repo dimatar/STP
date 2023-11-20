@@ -7,16 +7,15 @@ from kafka import KafkaProducer
 logger.info("Kafka Producer is starting")
 # Налаштування Kafka Producer
 # kafka_producer = Producer({'bootstrap.servers': '192.168.50.130:9092'})
-producer = KafkaProducer(bootstrap_servers='192.168.50.130:9092')
+producer = KafkaProducer(bootstrap_servers='192.168.0.159:9094')
 
 
-# Функція для зворотного виклику після відправки
-def delivery_report(err, msg):
-    logger.info("Delivery report")
-    if err is not None:
-        print(f'Message delivery failed: {err}')
-    else:
-        print(f'Message delivered to {msg.topic()} [{msg.partition()}]')
+def on_send_success(record_metadata):
+    logger.info(f"Message sent to {record_metadata.topic} partition {record_metadata.partition} offset {record_metadata.offset}")
+
+def on_send_error(excp):
+    logger.error(f'Message delivery failed: {excp}')
+
 
 
 # Слухаємо Flask ендпоінт
@@ -27,9 +26,10 @@ def listen_to_flask_endpoint():
     with requests.get(flask_endpoint, stream=True) as response:
         for line in response.iter_lines():
             if line:
+                logger.info("Got message from Flask endpoint, trying to send it to Kafka")
                 try:
                     data = json.loads(line.decode('utf-8'))
-                    producer.send(topic, json.dumps(data).encode('utf-8'))
+                    producer.send(topic, json.dumps(data).encode('utf-8')).add_callback(on_send_success).add_errback(on_send_error)
                     producer.flush()
                     logger.info(f"Data sent to Kafka topic: {topic}, data: {data}")
                 except Exception as e:

@@ -7,13 +7,12 @@ from proccesor import process
 
 logger.info("Kafka Consumer is starting")
 
-# Create KafkaConsumer
 consumer = KafkaConsumer(
     'tasks',
-    bootstrap_servers=['192.168.0.159:9094'],
+    bootstrap_servers=['192.168.50.130:9094'],
     auto_offset_reset='earliest',
     enable_auto_commit=True,
-    group_id='processor',  # Specify your consumer group ID here
+    group_id='processor',
     value_deserializer=lambda x: loads(x.decode('ISO-8859-1'))
 )
 
@@ -33,8 +32,6 @@ def consume_loop(consumer, topics):
             logger.info(f"Message received from Kafka, message: {msg}")
             process_data(msg.value)
 
-            logger.info(f"Sleeping for 10 seconds")
-            time.sleep(10)
 
     finally:
         consumer.close()

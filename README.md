@@ -13,8 +13,8 @@ This project demonstrates a real-time data streaming and visualization pipeline 
 
 1. **Clone the Repository**:
 ```commandline
-git clone [your-repository-link]
-cd [your-repository-directory]
+git clone https://github.com/dimatar/STP.git
+cd STP/
 ```
 
 2. **Install Python Dependencies**:
@@ -85,9 +85,9 @@ pip install -r requirements.txt
 - **List All Kafka Topics**:
 
 ```commandline
-sudo docker exec -it [kafka-container-name] kafka-topics.sh --list --bootstrap-server localhost:9092
+sudo docker exec -it laba-kafka-1 kafka-topics.sh --list --bootstrap-server localhost:9092
 ```
 - **Delete an Elasticsearch Index**:
 ```commandline
-curl -X DELETE "localhost:9200/[index-name]"
+curl -X DELETE "localhost:9200/war_event_v1"
 ```

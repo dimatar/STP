@@ -1,5 +1,4 @@
 from elasticsearch import Elasticsearch, exceptions as es_exceptions
-import json
 from loguru import logger
 
 es_conf = {
@@ -39,7 +38,7 @@ es = Elasticsearch([es_conf])
 
 
 def ensure_index():
-    logger.info(f"Ensuring index {es_index} exists")
+    logger.info(f"Ensuring elastic index {es_index} exists")
     try:
         if not es.indices.exists(index=es_index):
             es.indices.create(index=es_index, body=es_mapping)
@@ -50,6 +49,5 @@ def ensure_index():
 
 def process(data):
     logger.info(f"Processing data: {data}")
-    ensure_index()
     es.index(index=es_index, body=data)
     logger.info(f"Message processed and indexed: {data}")

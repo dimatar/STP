@@ -3,6 +3,7 @@ import random
 import time
 import json
 from datetime import datetime, timedelta
+from log_config import logger
 
 app = Flask(__name__)
 
@@ -24,24 +25,20 @@ def random_timestamp_last_week():
     Generate a random timestamp within the last week.
     """
     now = datetime.now()
-    one_week_ago = now - timedelta(weeks=1)
+    one_week_ago = now - timedelta(weeks=24)
 
-    # Generating a random timestamp between now and one week ago
     random_timestamp = one_week_ago + (now - one_week_ago) * random.random()
 
-    # Converting the timestamp to seconds since epoch
     random_timestamp = random_timestamp.timestamp()
 
     return random_timestamp
 
 def generate_war_event_data():
-    # current_timestamp = int(time.time())
     current_timestamp = random_timestamp_last_week()
 
     lat = round(random.uniform(45.0, 50.0), 5)
     lng = round(random.uniform(31.0, 40.0), 5)
 
-    # Список возможных описаний событий
     event_descriptions = {
         "Вибух": "yellow",
         "Спроба прориву": "red",
@@ -83,8 +80,8 @@ def generate_war_event_data():
 @app.route('/generate-stream')
 def generate_stream():
     def generate():
+        logger.info("Starting to generate mock data")
         while True:
-            # Same mock data generation as before
             user_id = f"user_{random.randint(1, 1000)}"
             events = ['login', 'purchase', 'logout', 'click', 'view']
             event_data = generate_war_event_data()

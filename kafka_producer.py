@@ -1,10 +1,14 @@
 import requests
 import json
-from loguru import logger
+from log_config import logger
 from kafka import KafkaProducer
 
 logger.info("Kafka Producer is starting")
-producer = KafkaProducer(bootstrap_servers='192.168.50.130:9094')
+try:
+    producer = KafkaProducer(bootstrap_servers='192.168.50.130:9094')
+except Exception as e:
+    logger.critical(f"Error connecting to Kafka: {e}")
+    exit(1)
 
 
 def on_send_success(record_metadata):
@@ -16,7 +20,6 @@ def on_send_error(excp):
     logger.error(f'Message delivery failed: {excp}')
 
 
-# Слухаємо Flask ендпоінт
 def listen_to_flask_endpoint():
     topic = "tasks"
     logger.info("Listening to Flask endpoint")

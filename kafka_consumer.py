@@ -1,9 +1,8 @@
-import time
 from json import loads
 from kafka import KafkaConsumer
-from loguru import logger
+from log_config import logger
 
-from proccesor import process
+from proccesor import process, ensure_index
 
 logger.info("Kafka Consumer is starting")
 
@@ -23,6 +22,7 @@ def process_data(data):
 
 def consume_loop(consumer, topics):
     logger.info("Listening to Kafka topic")
+    ensure_index()
     try:
         consumer.subscribe(topics)
 

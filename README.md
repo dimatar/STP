@@ -89,5 +89,5 @@ sudo docker exec -it laba-kafka-1 kafka-topics.sh --list --bootstrap-server loca
 ```
 - **Delete an Elasticsearch Index**:
 ```commandline
-curl -X DELETE "localhost:9200/war_event_v"
+curl -X DELETE "localhost:9200/war_event_v1"
 ```
